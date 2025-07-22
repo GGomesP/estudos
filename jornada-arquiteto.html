@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornada do Arquiteto de Soluções</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Strategic Blues & Grays (Inspired by "Professional & Stylish") -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling application structured around the six core modules of the source report. A sticky side navigation allows for quick jumps between sections, preserving the logical flow of the study plan. The structure was chosen to make the dense text-based guide digestible and interactive, transforming key comparisons and processes into visual charts and diagrams, which enhances user engagement and understanding. -->
+    <!-- Visualization & Content Choices: 
+        - Module 1 (Role Definition): Goal: Compare. Method: Doughnut Chart (Chart.js) for Hard vs. Soft skills, HTML Table for role differences. Justification: Visualizes the balance and clarifies distinctions effectively.
+        - Module 2 (Pillars): Goal: Organize. Method: HTML/CSS diagram for pillar interconnection. Justification: Shows the holistic nature of the technical foundations.
+        - Module 3 (Cloud): Goal: Compare. Method: Radar Chart (Chart.js) for Well-Architected Frameworks. Justification: Excellent for comparing multiple entities across multiple dimensions.
+        - Module 4 (Patterns): Goal: Compare. Method: Grouped Bar Chart (Chart.js) for Monolith vs. Microservices. Justification: Directly compares the trade-offs of each approach.
+        - Module 5 (DevOps): Goal: Organize. Method: HTML/CSS flow diagrams for CI/CD and IaC. Justification: Simplifies complex processes into easy-to-follow steps.
+        - Module 6 (Career): Goal: Organize. Method: HTML/CSS vertical timeline for certifications. Justification: Presents a career path in a visually engaging narrative format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #3b82f6; /* blue-500 */
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-container.left {
+            left: 0;
+        }
+        .timeline-container.right {
+            left: 50%;
+        }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: white;
+            border: 4px solid #f97316; /* orange-500 */
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-container.right::after {
+            left: -16px;
+        }
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+            .timeline-container {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            .timeline-container.left, .timeline-container.right {
+                left: 0%;
+            }
+            .timeline-container.left::after, .timeline-container.right::after {
+                left: 15px;
+            }
+        }
+        .sticky-nav a.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <div class="relative flex">
+        <nav class="sticky-nav sticky top-0 h-screen w-64 bg-white shadow-lg p-4 hidden lg:block">
+            <h2 class="text-lg font-bold text-slate-800 mb-4">Módulos de Estudo</h2>
+            <ul class="space-y-2">
+                <li><a href="#module1" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">1. Fundamentos</a></li>
+                <li><a href="#module2" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">2. Pilares Técnicos</a></li>
+                <li><a href="#module3" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">3. Dominando a Nuvem</a></li>
+                <li><a href="#module4" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">4. Padrões Modernos</a></li>
+                <li><a href="#module5" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">5. Cultura DevOps</a></li>
+                <li><a href="#module6" class="block p-2 rounded-lg hover:bg-slate-100 transition-colors">6. Construindo a Carreira</a></li>
+            </ul>
+        </nav>
+
+        <div class="flex-1">
+            <header class="bg-slate-800 text-white p-8 md:p-12 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-2">A Jornada do Arquiteto de Soluções</h1>
+                <p class="text-lg text-slate-300 max-w-3xl mx-auto">Um roteiro visual e interativo para construir uma carreira de sucesso como estrategista digital.</p>
+            </header>
+
+            <main class="p-4 md:p-8">
+                <section id="module1" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 1: Fundamentos da Arquitetura de Soluções</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">Este módulo estabelece a base conceitual, definindo o papel, as responsabilidades e a mentalidade do arquiteto. Compreender estes fundamentos é o primeiro passo para uma carreira de sucesso.</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">A Ponte Estratégica: Tradutor e Árbitro</h3>
+                            <p class="mb-4 text-slate-600">O arquiteto é a ponte entre os objetivos de negócio e a implementação técnica, traduzindo necessidades em visões tecnológicas e arbitrando trade-offs entre custo, desempenho e segurança.</p>
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="text-center p-4 bg-blue-100 text-blue-800 rounded-lg font-semibold">Negócio</div>
+                                <div class="text-4xl text-orange-500">🌉</div>
+                                <div class="text-center p-4 bg-indigo-100 text-indigo-800 rounded-lg font-semibold">Tecnologia</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-center text-slate-700">Balanço de Habilidades</h3>
+                            <p class="text-sm text-center mb-4 text-slate-600">O sucesso depende de um equilíbrio entre competências técnicas profundas e habilidades interpessoais desenvolvidas.</p>
+                            <div class="chart-container h-72 md:h-80">
+                                <canvas id="skillsBalanceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Diferenciando Papéis de Arquitetura</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">Papel</th>
+                                            <th scope="col" class="px-6 py-3">Foco Principal</th>
+                                            <th scope="col" class="px-6 py-3">Analogia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bg-white border-b border-slate-200">
+                                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">Arquiteto Corporativo</th>
+                                            <td class="px-6 py-4">Estratégia de TI de toda a organização.</td>
+                                            <td class="px-6 py-4">🗺️ Define o "mapa da cidade".</td>
+                                        </tr>
+                                        <tr class="bg-white border-b border-slate-200">
+                                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">Arquiteto de Soluções</th>
+                                            <td class="px-6 py-4">Resolve um problema de negócio específico.</td>
+                                            <td class="px-6 py-4">🏢 Projeta um "edifício" no mapa.</td>
+                                        </tr>
+                                        <tr class="bg-white">
+                                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">Arquiteto de Software</th>
+                                            <td class="px-6 py-4">Estrutura interna de uma aplicação ou componente.</td>
+                                            <td class="px-6 py-4">📐 Desenha a "planta baixa" do edifício.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="module2" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 2: Pilares Técnicos Essenciais</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">Estes são os blocos de construção sobre os quais todas as soluções modernas são projetadas. Um domínio sólido destes pilares permite tomar decisões informadas e projetar sistemas funcionais, seguros e eficientes.</p>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-6 text-center text-slate-700">A Interconexão dos Pilares Técnicos</h3>
+                        <p class="text-center text-slate-600 max-w-2xl mx-auto mb-8">Redes, Segurança e Bancos de Dados não são silos; são domínios interconectados. Uma decisão em uma área impacta diretamente as outras, exigindo um pensamento sistêmico e holístico.</p>
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
+                            <div class="text-center p-6 border-2 border-blue-300 bg-blue-50 rounded-lg w-full md:w-1/3">
+                                <div class="text-4xl mb-2">🌐</div>
+                                <h4 class="font-bold text-lg text-blue-800">Redes</h4>
+                                <p class="text-sm text-blue-700">Conectividade, latência, roteamento (VPC, DNS, LB).</p>
+                            </div>
+                            <div class="text-2xl text-slate-400 transform md:-rotate-90">↕️</div>
+                            <div class="text-center p-6 border-2 border-red-300 bg-red-50 rounded-lg w-full md:w-1/3">
+                                <div class="text-4xl mb-2">🛡️</div>
+                                <h4 class="font-bold text-lg text-red-800">Segurança</h4>
+                                <p class="text-sm text-red-700">Proteção de dados e acesso (IAM, Criptografia, OWASP).</p>
+                            </div>
+                            <div class="text-2xl text-slate-400 transform md:-rotate-90">↕️</div>
+                            <div class="text-center p-6 border-2 border-green-300 bg-green-50 rounded-lg w-full md:w-1/3">
+                                <div class="text-4xl mb-2">🗃️</div>
+                                <h4 class="font-bold text-lg text-green-800">Bancos de Dados</h4>
+                                <p class="text-sm text-green-700">Armazenamento, consistência, performance (SQL vs NoSQL).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="module3" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 3: Dominando a Computação em Nuvem</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">A nuvem é o paradigma dominante. Este módulo foca nos seus princípios, provedores (AWS, Azure, GCP) e, crucialmente, nas melhores práticas para projetar soluções de excelência.</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-center text-slate-700">Modelos de Serviço na Nuvem</h3>
+                            <p class="text-sm text-center mb-4 text-slate-600">A escolha do modelo define o nível de controle e responsabilidade.</p>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-slate-100 rounded-lg">
+                                    <h4 class="font-bold text-slate-800">IaaS (Infrastructure)</h4>
+                                    <p class="text-sm text-slate-600">Controle máximo. Você gerencia o S.O. e as aplicações.</p>
+                                </div>
+                                <div class="p-4 bg-slate-100 rounded-lg">
+                                    <h4 class="font-bold text-slate-800">PaaS (Platform)</h4>
+                                    <p class="text-sm text-slate-600">Foco no código. O provedor gerencia a plataforma.</p>
+                                </div>
+                                <div class="p-4 bg-slate-100 rounded-lg">
+                                    <h4 class="font-bold text-slate-800">SaaS (Software)</h4>
+                                    <p class="text-sm text-slate-600">Simplicidade máxima. Você apenas usa o software.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-center text-slate-700">Pilares do Well-Architected Framework</h3>
+                            <p class="text-sm text-center mb-4 text-slate-600">Uma bússola para construir arquiteturas seguras, resilientes e eficientes, traduzindo metas técnicas em mitigação de riscos de negócio.</p>
+                            <div class="chart-container">
+                                <canvas id="wellArchitectedChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="module4" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 4: Padrões de Arquitetura Modernos</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">A escolha de um padrão arquitetônico é uma decisão estratégica que impacta escalabilidade, manutenção e até a estrutura da equipe. Exploramos os principais padrões do cenário atual.</p>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+                            <h3 class="text-xl font-bold mb-4 text-center text-slate-700">Monólito vs. Microserviços</h3>
+                            <p class="text-sm text-center mb-4 text-slate-600">A decisão mais fundamental no design de uma nova aplicação, com trade-offs em complexidade, escalabilidade e agilidade de implantação.</p>
+                             <div class="chart-container">
+                                <canvas id="monolithVsMicroservicesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Arquitetura Orientada a Eventos (EDA)</h3>
+                            <p class="mb-4 text-slate-600">Em uma EDA, os serviços reagem a eventos (ex: "Pedido Criado"), promovendo um acoplamento fraco. Ideal para fluxos de trabalho assíncronos e sistemas distribuídos.</p>
+                            <div class="flex items-center justify-around p-4 bg-slate-50 rounded-lg">
+                                <div class="text-center">
+                                    <div class="p-2 bg-green-200 text-green-800 rounded-full text-sm font-bold">Produtor</div>
+                                </div>
+                                <div class="text-2xl text-slate-400">→</div>
+                                <div class="text-center">
+                                    <div class="p-4 border-2 border-dashed border-slate-400 text-slate-600 rounded-lg text-sm font-bold">Event Broker</div>
+                                </div>
+                                <div class="text-2xl text-slate-400">→</div>
+                                <div class="text-center">
+                                    <div class="p-2 bg-purple-200 text-purple-800 rounded-full text-sm font-bold">Consumidor</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold mb-4 text-slate-700">Arquitetura Serverless</h3>
+                            <p class="mb-4 text-slate-600">Um modelo de execução onde o provedor de nuvem gerencia os servidores. O faturamento é por uso e a escalabilidade é automática, permitindo foco total no código.</p>
+                            <div class="text-center p-4 bg-yellow-100 text-yellow-800 rounded-lg">
+                                <h4 class="font-bold">FaaS (Function as a Service)</h4>
+                                <p class="text-sm">Execute código em resposta a eventos sem gerenciar infraestrutura.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="module5" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 5: A Cultura DevOps e a Automação</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">DevOps é a ponte que conecta o design à realidade operacional. Suas práticas e ferramentas são pré-requisitos para que arquiteturas modernas sejam eficientes e confiáveis.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <h3 class="text-lg font-bold mb-2 text-slate-700">DevOps</h3>
+                            <p class="text-sm text-slate-600">Cultura de colaboração e responsabilidade compartilhada para acelerar a entrega de valor.</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <h3 class="text-lg font-bold mb-2 text-slate-700">IaC (Terraform)</h3>
+                            <p class="text-sm text-slate-600">Gerencie e provisione infraestrutura através de código, garantindo consistência e automação.</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <h3 class="text-lg font-bold mb-2 text-slate-700">CI/CD</h3>
+                            <p class="text-sm text-slate-600">Automatize a integração, teste e implantação de código para entregas rápidas e seguras.</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                            <h3 class="text-lg font-bold mb-2 text-slate-700">Contêineres (Docker/K8s)</h3>
+                            <p class="text-sm text-slate-600">Empacote aplicações para execução consistente e orquestre em escala com Kubernetes.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="module6" class="mb-20 scroll-mt-20">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">Módulo 6: Construindo sua Carreira</h2>
+                    <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">Transforme conhecimento em uma carreira de sucesso através de certificações, desenvolvimento de soft skills e um portfólio robusto que demonstre sua competência.</p>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-8 text-center text-slate-700">Roteiro de Certificações Recomendado</h3>
+                        <div class="timeline">
+                            <div class="timeline-container left">
+                                <div class="timeline-content">
+                                    <h4 class="font-bold text-lg text-blue-700">Nível Fundamental</h4>
+                                    <p class="text-sm text-slate-600">Valida a compreensão geral da nuvem. Escolha um provedor para começar (AWS, Azure ou GCP).</p>
+                                </div>
+                            </div>
+                            <div class="timeline-container right">
+                                <div class="timeline-content">
+                                    <h4 class="font-bold text-lg text-blue-700">Nível Associado</h4>
+                                    <p class="text-sm text-slate-600">O foco principal. Valida a habilidade de projetar e implementar soluções (Ex: AWS SAA-C03).</p>
+                                </div>
+                            </div>
+                            <div class="timeline-container left">
+                                <div class="timeline-content">
+                                    <h4 class="font-bold text-lg text-blue-700">Nível Profissional</h4>
+                                    <p class="text-sm text-slate-600">Demonstra habilidades avançadas no design de aplicações complexas e em larga escala.</p>
+                                </div>
+                            </div>
+                            <div class="timeline-container right">
+                                <div class="timeline-content">
+                                    <h4 class="font-bold text-lg text-blue-700">Nível de Especialidade</h4>
+                                    <p class="text-sm text-slate-600">Aprofunda o conhecimento em áreas como Segurança, Redes ou DevOps.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <footer class="bg-slate-800 text-white p-6 text-center text-sm">
+                <p>Infográfico interativo baseado no "Plano de Estudo Aprofundado para Arquitetura de Soluções".</p>
+                <p>Abrace a complexidade, pense de forma crítica e continue a construir o futuro, uma solução de cada vez.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const FONT_COLOR = '#334155'; // slate-700
+            const GRID_COLOR = '#e2e8f0'; // slate-200
+            const PALETTE = {
+                blue: '#3b82f6',
+                indigo: '#6366f1',
+                orange: '#f97316',
+                green: '#22c55e',
+                red: '#ef4444',
+                yellow: '#eab308'
+            };
+
+            const wrapLabel = (str, maxWidth = 16) => {
+                if (typeof str !== 'string' || str.length <= maxWidth) {
+                    return str;
+                }
+                const words = str.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if (currentLine.length + words[i].length + 1 < maxWidth) {
+                        currentLine += ' ' + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            };
+            
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                if (!item) return '';
+                let label = item.chart.data.labels[item.dataIndex];
+                return Array.isArray(label) ? label.join(' ') : label;
+            };
+
+            const defaultChartOptions = (extraOptions = {}) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: FONT_COLOR }
+                    },
+                    tooltip: {
+                        callbacks: { title: tooltipTitleCallback }
+                    }
+                },
+                ...extraOptions
+            });
+
+            const skillsBalanceCtx = document.getElementById('skillsBalanceChart');
+            if (skillsBalanceCtx) {
+                new Chart(skillsBalanceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Hard Skills (Técnicas)', 'Soft Skills (Interpessoais)'],
+                        datasets: [{
+                            data: [60, 40],
+                            backgroundColor: [PALETTE.blue, PALETTE.indigo],
+                            borderColor: '#f8fafc',
+                            borderWidth: 4
+                        }]
+                    },
+                    options: defaultChartOptions({
+                        plugins: {
+                           legend: { position: 'bottom', labels: { color: FONT_COLOR } },
+                           tooltip: { callbacks: { title: tooltipTitleCallback } }
+                        }
+                    })
+                });
+            }
+
+            const wellArchitectedCtx = document.getElementById('wellArchitectedChart');
+            if (wellArchitectedCtx) {
+                new Chart(wellArchitectedCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Excelência Operacional', 'Segurança', 'Confiabilidade', 'Eficiência de Performance', 'Otimização de Custos', 'Sustentabilidade'],
+                        datasets: [{
+                            label: 'Foco do Pilar',
+                            data: [8, 10, 10, 8, 9, 7],
+                            fill: true,
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: PALETTE.blue,
+                            pointBackgroundColor: PALETTE.blue,
+                            pointBorderColor: '#fff',
+                        }]
+                    },
+                    options: defaultChartOptions({
+                       plugins: {
+                           legend: { display: false },
+                           tooltip: { callbacks: { title: tooltipTitleCallback } }
+                       },
+                       scales: {
+                           r: {
+                               angleLines: { color: GRID_COLOR },
+                               grid: { color: GRID_COLOR },
+                               pointLabels: { color: FONT_COLOR, font: { size: 10 } },
+                               ticks: { display: false }
+                           }
+                       }
+                    })
+                });
+            }
+
+            const monolithVsMicroservicesCtx = document.getElementById('monolithVsMicroservicesChart');
+            if (monolithVsMicroservicesCtx) {
+                const rawLabels = ['Simplicidade Inicial', 'Complexidade Crescente', 'Implantação Independente', 'Escalabilidade'];
+                const wrappedLabels = rawLabels.map(label => wrapLabel(label));
+
+                new Chart(monolithVsMicroservicesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: wrappedLabels,
+                        datasets: [
+                            {
+                                label: 'Monólito',
+                                data: [9, 3, 2, 5],
+                                backgroundColor: PALETTE.indigo,
+                            },
+                            {
+                                label: 'Microserviços',
+                                data: [4, 8, 9, 9],
+                                backgroundColor: PALETTE.orange,
+                            }
+                        ]
+                    },
+                    options: defaultChartOptions({
+                        scales: {
+                            y: { 
+                                beginAtZero: true,
+                                max: 10,
+                                ticks: { color: FONT_COLOR },
+                                grid: { color: GRID_COLOR },
+                                title: { display: true, text: 'Nível (0-10)', color: FONT_COLOR }
+                            },
+                            x: {
+                                ticks: { color: FONT_COLOR },
+                                grid: { display: false }
+                            }
+                        }
+                    })
+                });
+            }
+            
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.sticky-nav a');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
